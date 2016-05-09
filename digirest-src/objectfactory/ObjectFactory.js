@@ -91,7 +91,7 @@ function _init_configuration(propertiesLocation, onComplete){
 }
 
 /** Init the configuration Routes */
-function _init_routes(router, onComplete){
+function _init_routes(expressapp, router, onComplete){
     var routesDeployed = false;
     logger.info(MODULE_NAME + ': routes preload');
     routeDeployer.deployDynamicRoutes(router,
@@ -103,15 +103,15 @@ function _init_routes(router, onComplete){
             }
             routesDeployed = true;
             logger.info(MODULE_NAME + ': routes postload');
-            app.use('/api',router);
+            expressapp.use('/api',router);
             onComplete();
         });
 }
 
 /** Init the mongo db */
-function _init_db_connections(){
+function _init_db_connections(onComplete){
     connectionService.testConnection(
-        function onComplete(error){
+        function (error){
             if(error){
                 logger.error(MODULE_NAME + ': error testing the connection to database ' + JSON.stringify(error));
             }else{
@@ -123,10 +123,10 @@ function _init_db_connections(){
 }
 
 /** Init the websockets */
-function _init_websockets(httpServer){
+function _init_websockets(httpServer,onComplete){
     webSocketService.init(
         httpServer,
-        function onComplete(error){
+        function (error){
             if(error) {
                 logger.error(MODULE_NAME + ': error in websocket init ' + JSON.stringify(error));
             }else{
@@ -148,30 +148,37 @@ exports.init_digirest = function _init_digirest(app,router,httpServer,properties
 
     // init digirest
     async.waterfall([
-        function (callback){
-            _init_configuration(propertiesLocation,callback);
-        },
-        function (callback){
-            _init_routes(router,callback);
-        },
-        function (callback){
-            _init_db_connections(callback);
-        },
-        function (callback){
-            _init_websockets(httpServer,callback);
-        },
-        function (callback){
+            function (callback){
+                _init_configuration(propertiesLocation,callback);
+            },
+            function (callback){
+                _init_routes(app,router,callback);
+            },
+            function (callback){
+                _init_db_connections(callback);
+            },
+            function (callback){
+                _init_websockets(httpServer,callback);
+            },
+            function (callback){
 
-            // init express
-            app.use('/api', router);
-            app.disable('x-powered-by');
-            discoveryService.setDynRoot('/api');
+                // init express
+                app.use('/api', router);
+                app.disable('x-powered-by');
+                discoveryService.setDynRoot('/api');
 
-            // if fatus configured, init fatus
-            if(process.env.FATUS_QUEUE_NAME) {
-                let fatus = require('fatusjs').instance;
-                fatus.addWorker();
+                // if fatus configured, init fatus
+                if(process.env.FATUS_QUEUE_NAME) {
+                    let fatus = require('fatusjs').instance;
+                    fatus.addWorker();
+                }
+                console.log(MODULE_NAME + ': digirest init complete');
+            }
+        ],
+        function (err,val){
+            if(err){
+                console.error(err);
             }
         }
-    ]);
+    );
 }

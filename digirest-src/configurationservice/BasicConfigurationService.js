@@ -158,7 +158,7 @@ class BasicConfigurationService {
      */
     getPropertiesJsonByRoot(root,onGetComplete) {
         if(this.initcomplete){
-            let jsonObj = _properties.getByRoot(root)
+            let jsonObj = this._properties.getByRoot(root)
             onGetComplete(null, jsonObj);
         }else{
             console.log(MODULE_NAME + " getProperty: properties not init-ed");

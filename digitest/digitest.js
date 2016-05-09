@@ -16,15 +16,19 @@ global.__base = __dirname + '/';
 describe('Init',function(){
     "use strict";
 
+    var app = express();
+    var server = http.createServer(app);
+    server.listen(4000);
+    
     it('should init',function(done){
-        var app = express();
-        var server = http.createServer(app);
-        server.listen(4000);
-        digirest.init(app,express.router,server,PROPERTIES_FOLDER);
-
-        setTimeout(done,5000);
-
+        digirest.init(app,express.Router(),server,PROPERTIES_FOLDER);
+        setTimeout(done,9000);
     });
+    
+    it('should return the object factory',function() {
+        assert(typeof digirest.getObjectFactory(),'Object','object factory must be defined');
+    });
+    
 
 });
 

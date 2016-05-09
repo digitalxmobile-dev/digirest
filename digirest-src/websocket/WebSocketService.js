@@ -32,6 +32,7 @@ function _init(httpServer,onComplete) {
 
     /** disable if not desired */
     if (!process.env.USE_WEBSOCKETS) {
+        onComplete();
         return;
     }
 

@@ -84,10 +84,11 @@ function _deployDynamicRoutes(expressApp,onComplete){
         function onSomething(error,success){
             if(success){
                 console.log(MODULE_NAME + ': operations loaded');
+                onComplete(null,success);
             }else if (error){
                 var message = MODULE_NAME + ': error on operation/routes loading ' + JSON.stringify(error);
                 console.log(message);
-                onComplete(error(message),succes);
+                onComplete(error(message),success);
             }
         });
 }

@@ -28,6 +28,14 @@ function registerRoute(method,route){
     objectFactory.discoveryService.registerFixedRoute(method,route);
 }
 
+/**
+ * return the digirest objectfactory
+ */
+function getObjectFactory(){
+    return objectFactory;
+}
+
 /** EXPORTS */
 exports.init = init;
 exports.registerRoute = registerRoute;
+exports.getObjectFactory = getObjectFactory;
