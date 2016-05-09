@@ -3,7 +3,7 @@
  */
 
 
-const objectFactory = require(objectFactory/ObjectFactory);
+const objectFactory = require('digirest-src/objectFactory/ObjectFactory');
 
 /**
  * init digirest
