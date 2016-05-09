@@ -99,10 +99,14 @@ function _deployDynamicRoutes(expressApp,onComplete){
  * @private
  */
 function _deployRoutesArray (routesArray,expressApp,configurationService,onArrayRoutesDeployed){
-    routesArray.forEach(
-        function (routeName) {
-            _deploySingleRoute(expressApp, configurationService, routeName);
-        });
+    if(routesArray) {
+        routesArray.forEach(
+            function (routeName) {
+                _deploySingleRoute(expressApp, configurationService, routeName);
+            });
+    }else{
+        console.log(MODULE_NAME + ': no routes to deploy found');
+    }
     onArrayRoutesDeployed(null,true);
 }
 

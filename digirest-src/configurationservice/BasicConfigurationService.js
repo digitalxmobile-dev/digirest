@@ -32,6 +32,8 @@ class BasicConfigurationService {
         }
         this._properties = null;
         this.initcomplete = false;
+        this.objectFactory = require('../objectFactory/ObjectFactory');
+        this.fileService = require('../objectFactory/ObjectFactory').fileService;
     }
 
     /**
@@ -66,10 +68,10 @@ class BasicConfigurationService {
         } else {
             // configure location on this
             this.propertiesLocation = propertiesLocation;
-            this.propertiesLocationPath = FileService.getPath(propertiesLocation);
+            this.propertiesLocationPath = this.fileService.getPath(propertiesLocation);
 
             // get the files in the folder
-            FileService.getFilenamesInFolder(
+            this.fileService.getFilenamesInFolder(
                 this.propertiesLocationPath,
                 function onFilesRead(files, error) {
 
@@ -93,17 +95,17 @@ class BasicConfigurationService {
                             });
 
                         // ok
-                        global.__properties = _properties;
-                        this.initcomplete = true;
+                        global.__properties = th._properties;
+                        th.initcomplete = true;
 
                         // calback
-                        onInitComplete(err, true);
+                        onInitComplete(null, true);
                     } else if (error) {
                         // error
                         onInitComplete(error, false);
                     } else {
                         // empty file list
-                        onInitComplete(Error("no properties file in folder" + this.propertiesLocationPath), false);
+                        onInitComplete(Error("no properties file in folder" + th.propertiesLocationPath), false);
                     }
 
 

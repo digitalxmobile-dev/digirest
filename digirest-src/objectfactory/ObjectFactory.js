@@ -6,13 +6,18 @@
 'use strict';
 
 /** global requires and vars */
-var MODULE_NAME = 'ObjectFactory';
+const MODULE_NAME = 'ObjectFactory';
+const async = require('async');
 
 /** exports - proto dependency injection here - order matters*/
 
 // cache
 var cacheService = require('memory-cache');
 exports.cacheService = cacheService;
+
+// filesystem manager and utility
+var fileService = require('../fileservice/FileService');
+exports.fileService = fileService;
 
 // configuration manager
 const ConfigurationService = require('../configurationservice/BasicConfigurationService');
@@ -22,6 +27,7 @@ exports.configurationService = configurationService;
 // route deploy service
 var routeDeployer = require('../routeservices/RouteDeployer');
 exports.routeDeployer = routeDeployer;
+
 // simple route discovery service
 var discoveryService = require('../routeservices/DiscoveryService');
 exports.discoveryService = discoveryService;
@@ -37,9 +43,6 @@ exports.runQueryService = runQueryService;
 // db object management service
 var objectService = require('../dataservice/ObjectService');
 exports.objectService = objectService;
-// filesystem manager and utility
-var fileService = require('../fileservice/FileService');
-exports.fileService = fileService;
 // security service
 var securityService = require('../security/SecurityService');
 exports.securityService = securityService;
@@ -66,7 +69,7 @@ var pushService = require('../integrations/PushService');
 exports.pushService = pushService;
 
 /** Init the configuration Service */
-function _init_configuration(propertiesLocation){
+function _init_configuration(propertiesLocation, onComplete){
     // init config service
     logger.info(MODULE_NAME + ': config preload');
     configurationService.init(propertiesLocation,function(error,success){
@@ -79,13 +82,16 @@ function _init_configuration(propertiesLocation){
                 }else{
                     logger.info(MODULE_NAME + ': config load NOK with no error');
                 }
+                onComplete();
             });
+        }else{
+            onComplete();
         }
     });
 }
 
 /** Init the configuration Routes */
-function _init_routes(router){
+function _init_routes(router, onComplete){
     var routesDeployed = false;
     logger.info(MODULE_NAME + ': routes preload');
     routeDeployer.deployDynamicRoutes(router,
@@ -98,6 +104,7 @@ function _init_routes(router){
             routesDeployed = true;
             logger.info(MODULE_NAME + ': routes postload');
             app.use('/api',router);
+            onComplete();
         });
 }
 
@@ -111,6 +118,7 @@ function _init_db_connections(){
                 logger.info(MODULE_NAME + ': ping connection to database success');
                 errorService.startup({},MODULE_NAME);
             }
+            onComplete();
         });
 }
 
@@ -124,6 +132,7 @@ function _init_websockets(httpServer){
             }else{
                 logger.info(MODULE_NAME + ': websocket init OK')
             }
+            onComplete();
         }
     );
 }
@@ -138,19 +147,31 @@ exports.init_websockets = _init_websockets;
 exports.init_digirest = function _init_digirest(app,router,httpServer,propertiesLocation){
 
     // init digirest
-    _init_configuration(propertiesLocation);
-    _init_routes(router);
-    _init_db_connections();
-    _init_websockets(httpServer);
+    async.waterfall([
+        function (callback){
+            _init_configuration(propertiesLocation,callback);
+        },
+        function (callback){
+            _init_routes(router,callback);
+        },
+        function (callback){
+            _init_db_connections(callback);
+        },
+        function (callback){
+            _init_websockets(httpServer,callback);
+        },
+        function (callback){
 
-    // init express
-    app.use('/api', router);
-    app.disable('x-powered-by');
-    discoveryService.setDynRoot('/api');
+            // init express
+            app.use('/api', router);
+            app.disable('x-powered-by');
+            discoveryService.setDynRoot('/api');
 
-    // if fatus configured, init fatus
-    if(process.env.FATUS_QUEUE_NAME) {
-        let fatus = require('fatusjs').instance;
-        fatus.addWorker();
-    }
+            // if fatus configured, init fatus
+            if(process.env.FATUS_QUEUE_NAME) {
+                let fatus = require('fatusjs').instance;
+                fatus.addWorker();
+            }
+        }
+    ]);
 }
