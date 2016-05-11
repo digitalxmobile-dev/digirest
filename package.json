@@ -16,7 +16,6 @@
     "debug": "^2.2.0",
     "dgx-pushwoosh-client": "github:auridevil/pushwoosh-node-client",
     "express-jwt": "^3.4.0",
-    "funcster": "0.0.3",
     "jsonwebtoken": "^6.2.0",
     "memory-cache": "^0.1.5",
     "moment": "^2.13.0",

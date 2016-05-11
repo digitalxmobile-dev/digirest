@@ -12,11 +12,11 @@ const async = require('async');
 /** exports - proto dependency injection here - order matters*/
 
 // cache
-var cacheService = require('memory-cache');
+const cacheService = require('memory-cache');
 exports.cacheService = cacheService;
 
 // filesystem manager and utility
-var fileService = require('../fileservice/FileService');
+const fileService = require('../fileservice/FileService');
 exports.fileService = fileService;
 
 // configuration manager
@@ -167,11 +167,7 @@ exports.init_digirest = function _init_digirest(app,router,httpServer,properties
                 app.disable('x-powered-by');
                 discoveryService.setDynRoot('/api');
 
-                // if fatus configured, init fatus
-                if(process.env.FATUS_QUEUE_NAME) {
-                    let fatus = require('fatusjs').instance;
-                    fatus.addWorker();
-                }
+                // complete
                 console.log(MODULE_NAME + ': digirest init complete');
             }
         ],

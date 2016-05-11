@@ -28,7 +28,6 @@ describe('Init',function(){
     it('should return the object factory',function() {
         assert(typeof digirest.getObjectFactory(),'Object','object factory must be defined');
     });
-    
 
 });
 
