@@ -1,10 +1,11 @@
 {
   "name": "digirest",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The DigitalX REST API toolkit.",
   "main": "digirest.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha -w --timeout 1500000 --reporter spec digitest"
+
   },
   "author": "Aureliano Bergese - aureliano.bergese@gmail.com",
   "license": "MIT",

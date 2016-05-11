@@ -34,5 +34,5 @@ Mongo configuration can be either in properties file:
 
 or in enviroment variables:
 
-    MONGO_CONN = mongodb://test:test@plocalhost:27017/Test
+    MONGO_CONN = mongodb://test:test@localhost:27017/Test
 
