@@ -4,6 +4,8 @@ digirest
 Digitalx REST API toolkit.
 Build and deploy API on Azure, with Express and MongoDB.
 
+WORK IN PROGRESS DOCUMENTATION - if you are in a hurry contact us at aureliano@digitalx.it / mobile@digitalx.it
+
 Installation
 =================
 TODO
@@ -22,7 +24,7 @@ Basic Configuration
 Mongo Configuration
 =================
 Mongo configuration can be either in properties file:
-    #[mongo main connection]
+
     mongodb.protocol=mongodb
     mongodb.user=test
     mongodb.pwd=test
@@ -31,5 +33,6 @@ Mongo configuration can be either in properties file:
     mongodb.database=Test
 
 or in enviroment variables:
+
     MONGO_CONN = mongodb://test:test@plocalhost:27017/Test
 
