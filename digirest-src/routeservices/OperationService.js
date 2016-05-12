@@ -42,6 +42,10 @@ function _initDynamicOperations(onInitComplete){
                             masterArray,
                             function _initSlave(slavename,eacallback){
                                 _initOperations(eacallback,SLAVE_OP_KEY+slavename);
+                            },
+                            function _slaveComplete(err,val){
+                                if (!err) val = val || true;
+                                wfcallback(err,val);
                             }
                         )
                     }else{

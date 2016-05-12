@@ -209,17 +209,11 @@ function _deploySingleRoute(router,configurationService,routeName){
 
             if (routeConf.method === 'GET') {
                 router.get(routeConf.pattern, invoke);
-            }
-
-            if (routeConf.method === 'POST') {
+            }else if (routeConf.method === 'POST') {
                 router.post(routeConf.pattern, invoke);
-            }
-
-            if (routeConf.method === 'DELETE') {
+            }else if (routeConf.method === 'DELETE') {
                 router.delete(routeConf.pattern, invoke);
-            }
-
-            if (routeConf.method === 'PUT') {
+            }else if (routeConf.method === 'PUT') {
                 router.put(routeConf.pattern, invoke);
             }
 

@@ -12,19 +12,10 @@ var MODULE_NAME = 'RunQueryService';
 var RETURN_ONE_OK = {w:1};
 var UPDATE_OPTION = {w:1,multi:true};
 var ERROR_COLLECTION = '_Errors';
-var ConnectionService = require('../objectFactory/ObjectFactory').connectionService;
 var CacheService = require('../objectFactory/ObjectFactory').cacheService;
 var underscore = require('underscore');
 var async = require('async');
 
-/**
- * set an alternative connection service
- * @param alternativeConnectionService
- * @private
- */
-function _setConnectionService(alternativeConnectionService){
-    ConnectionService = alternativeConnectionService;
-}
 /**
  * run a select query on a collection
  * @param collection
@@ -33,7 +24,7 @@ function _setConnectionService(alternativeConnectionService){
  * @private
  */
 function _runAggregate(collection,pipeline,options,onComplete){
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -68,7 +59,7 @@ function _runAggregate(collection,pipeline,options,onComplete){
  * @private
  */
 function _runSelect(collection,query,onComplete){
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -106,7 +97,7 @@ function _runSelect(collection,query,onComplete){
  * @private
  */
 function _runAdvancedSelect(collection,query,option,onComplete){
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -144,7 +135,7 @@ function _runAdvancedSelect(collection,query,option,onComplete){
  * @private
  */
 function _runOne(collection,query,onComplete){
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -325,7 +316,7 @@ function _runAdvancedCachedSelect(collection,query,options,cachelife,onComplete)
  * @private
  */
 function _runDistinct(collection,distinct,query,options,onComplete){
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -365,7 +356,7 @@ function _runDistinct(collection,distinct,query,options,onComplete){
  * @private
  */
 function _runInsert(collection,query,onComplete) {
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -401,7 +392,7 @@ function _runInsert(collection,query,onComplete) {
  * @private
  */
 function _runUpdate(collection,query,updateobj,options,onComplete) {
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -439,7 +430,7 @@ function _runFindModifiy(qualification,sort,update,options,collection,onGetCompl
     async.waterfall([
             /** get database */
                 function getDb(callback) {
-                ConnectionService.getConnection(callback);
+                _getConnectionService().getConnection(callback);
             },
             /** get the order code value */
                 function execute(db, callback) {
@@ -477,7 +468,7 @@ function _doGetTop(collection,query,topSize,sort,onComplete) {
     async.waterfall([
             // get database
             function getDb(callback) {
-                ConnectionService.getConnection(callback);
+                _getConnectionService().getConnection(callback);
             },
             // drop
             function execute(db, callback) {
@@ -526,7 +517,7 @@ function _doRemove(collection,query,options,onComplete){
     async.waterfall([
             // get database
             function getDb(callback) {
-                ConnectionService.getConnection(callback);
+                _getConnectionService().getConnection(callback);
             },
             // drop
             function execute(db, callback) {
@@ -557,7 +548,7 @@ function _doRemove(collection,query,options,onComplete){
  * @private
  */
 function _doSave(collection,query,onComplete) {
-    ConnectionService.getConnection(
+    _getConnectionService().getConnection(
         function onConnected(error,dbConnection){
             if(error){
                 onComplete(error,null);
@@ -591,7 +582,7 @@ function _doDrop(collection,onDrop){
     async.waterfall([
             // get database
             function getDb(callback) {
-                ConnectionService.getConnection(callback);
+                _getConnectionService().getConnection(callback);
             },
             // drop
             function execute(db, callback) {
@@ -627,7 +618,7 @@ function _doCreateCollection(collection,onCreate){
     async.waterfall([
             // get database
             function getDb(callback) {
-                ConnectionService.getConnection(callback);
+                _getConnectionService().getConnection(callback);
             },
             // create
             function execute(db, callback) {
@@ -664,7 +655,7 @@ function _doCreateIndex(collection,index,options,onCreate){
     async.waterfall([
             // get database
             function getDb(callback) {
-                ConnectionService.getConnection(callback);
+                _getConnectionService().getConnection(callback);
             },
             // create
             function execute(db, callback) {
@@ -747,6 +738,15 @@ function _getCacheService(){
     }
 }
 
+/**
+ * return the connection service
+ * @returns {*}
+ * @private
+ */
+function _getConnectionService(){
+    return require('../objectFactory/ObjectFactory').connectionService;
+}
+
 /** exports */
 
 exports.doCreateCollection=_doCreateCollection;
@@ -765,4 +765,3 @@ exports.runDistinct=_runDistinct;
 exports.runCachedDistinct=_runCachedDistinct;
 exports.runAggregate=_runAggregate;
 exports.runFindModifiy=_runFindModifiy;
-exports.setConnectionService=_setConnectionService;
