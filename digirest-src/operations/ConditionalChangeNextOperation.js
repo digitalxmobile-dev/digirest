@@ -21,8 +21,6 @@ function _evalCondition(funcParamObj,onExecuteComplete){
 
     /** default object content of an operation */
     var operationObj = funcParamObj.operationRef;
-    var httpRequest = funcParamObj.request;
-    var httpResponse = funcParamObj.response;
     var data = funcParamObj.payload;
 
     /** pre - operations on data */

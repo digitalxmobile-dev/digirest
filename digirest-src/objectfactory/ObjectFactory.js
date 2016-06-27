@@ -25,21 +25,25 @@ const configurationService = ConfigurationService.instance;
 exports.configurationService = configurationService;
 
 // route deploy service
-var routeDeployer = require('../routeservices/RouteDeployer');
+const routeDeployer = require('../routeservices/RouteDeployer');
 exports.routeDeployer = routeDeployer;
 
 // simple route discovery service
-var discoveryService = require('../routeservices/DiscoveryService');
+const discoveryService = require('../routeservices/DiscoveryService');
 exports.discoveryService = discoveryService;
+
 // operation manager service
-var operationService = require('../routeservices/OperationService');
+const operationService = require('../routeservices/OperationService');
 exports.operationService = operationService;
+
 // database connection service
-var connectionService = require('../connectionservice/MongoConnectionService');
+const connectionService = require('../connectionservice/MongoConnectionService');
 exports.connectionService = connectionService;
+
 // query executions service
-var runQueryService = require('../dataservice/RunQueryService');
+const runQueryService = require('../dataservice/RunQueryService');
 exports.runQueryService = runQueryService;
+
 // db object management service
 var objectService = require('../dataservice/ObjectService');
 exports.objectService = objectService;
@@ -67,6 +71,9 @@ exports.webSocketUserService = webSocketUserService;
 // Push Service
 var pushService = require('../integrations/PushService');
 exports.pushService = pushService;
+// Mail Service
+var mailService = require('../mailservice/MailService');
+exports.mailService = mailService;
 
 /** Init the configuration Service */
 function _init_configuration(propertiesLocation, onComplete){
@@ -149,15 +156,19 @@ exports.init_digirest = function _init_digirest(app,router,httpServer,properties
     // init digirest
     async.waterfall([
             function (callback){
+                console.log(MODULE_NAME + ': init configuration')
                 _init_configuration(propertiesLocation,callback);
             },
             function (callback){
+                console.log(MODULE_NAME + ': init routes')
                 _init_routes(app,router,callback);
             },
             function (callback){
+                console.log(MODULE_NAME + ': init db')
                 _init_db_connections(callback);
             },
             function (callback){
+                console.log(MODULE_NAME + ': init wss')
                 _init_websockets(httpServer,callback);
             },
             function (callback){
