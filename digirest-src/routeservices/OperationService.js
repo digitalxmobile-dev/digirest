@@ -88,10 +88,10 @@ function _initOperations(onInitComplete, operationsGroup){
                 } else if (error) {
                     var message = MODULE_NAME + ': cannot get operations loaded, no ' + operationsKey + ' property found';
                     console.log(message);
-                    onInitComplete(new Error(message),success=false);
+                    onInitComplete(new Error(message),false);
                 } else {
                     console.log( MODULE_NAME + ': no operations defined');
-                    onInitComplete(null,success);
+                    onInitComplete(null,true);
                 }
             });
     }
