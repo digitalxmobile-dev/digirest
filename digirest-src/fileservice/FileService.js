@@ -11,8 +11,6 @@ var fs=require('fs');
 var path=require('path');
 var cache = {};
 
-
-
 /**
  * Return an array of filenames in a folder
  * @param folderpath the path of the folder
