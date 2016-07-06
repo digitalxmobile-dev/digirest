@@ -173,51 +173,58 @@ function _deploySingleRoute(router,configurationService,routeName){
             var Worker = require(_getFileService().getPath(moduleRoute));
             var invoke = null;
 
-            // apply protection
-            if(routeConf.protected){
-                if(!process.env.DISABLEJWT){
-                    router.use(routeConf.pattern, _getSecurityMiddleware());
+            // eventually skip
+            if(routeConf.skip=='enabled') {
+                console.log(MODULE_NAME + ': %s skipped by conf', routeConf.pattern);
+                
+            }else{
+
+                // apply protection
+                if (routeConf.protected) {
+                    if (!process.env.DISABLEJWT) {
+                        router.use(routeConf.pattern, _getSecurityMiddleware());
+                    }
                 }
-            }
 
-            // apply special middlewares
-            if(routeConf.middleware){
-                var middlewareList = routeConf.middleware.split(',');
-                for(var i= 0; i<middlewareList.length; i++){
-                    var Middleware = require(_getFileService().getPath(middlewareList[i]));
-                    router.use(routeConf.pattern,Middleware);
+                // apply special middlewares
+                if (routeConf.middleware) {
+                    var middlewareList = routeConf.middleware.split(',');
+                    for (var i = 0; i < middlewareList.length; i++) {
+                        var Middleware = require(_getFileService().getPath(middlewareList[i]));
+                        router.use(routeConf.pattern, Middleware);
+                    }
                 }
-            }
 
-            // frequent error
-            if(routeConf.patter){
-                console.error('WARNING: RIGHT USE IS PATTERN, NOT PATTER')
-            }
-
-            // if needed, allocate a new instance of the worker
-            //if(routeConf.newinstance){
-            try {
-                var instance = new Worker(routeConf);
-                invoke = instance.invoke;
-            }catch(legacyCodeError){
-                if(legacyCodeError.message === 'object is not a function' || legacyCodeError.message === 'Worker is not a function'){
-                    invoke = Worker.invoke;
-                }else{
-                    throw legacyCodeError;
+                // frequent error
+                if (routeConf.patter) {
+                    console.error('WARNING: RIGHT USE IS PATTERN, NOT PATTER')
                 }
-            }
 
-            if (routeConf.method === 'GET') {
-                router.get(routeConf.pattern, invoke);
-            }else if (routeConf.method === 'POST') {
-                router.post(routeConf.pattern, invoke);
-            }else if (routeConf.method === 'DELETE') {
-                router.delete(routeConf.pattern, invoke);
-            }else if (routeConf.method === 'PUT') {
-                router.put(routeConf.pattern, invoke);
-            }
+                // if needed, allocate a new instance of the worker
+                //if(routeConf.newinstance){
+                try {
+                    var instance = new Worker(routeConf);
+                    invoke = instance.invoke;
+                } catch (legacyCodeError) {
+                    if (legacyCodeError.message === 'object is not a function' || legacyCodeError.message === 'Worker is not a function') {
+                        invoke = Worker.invoke;
+                    } else {
+                        throw legacyCodeError;
+                    }
+                }
 
-            require('../objectFactory/ObjectFactory').discoveryService.registerDynamicRoute(routeConf.method,routeConf.pattern);
+                if (routeConf.method === 'GET') {
+                    router.get(routeConf.pattern, invoke);
+                } else if (routeConf.method === 'POST') {
+                    router.post(routeConf.pattern, invoke);
+                } else if (routeConf.method === 'DELETE') {
+                    router.delete(routeConf.pattern, invoke);
+                } else if (routeConf.method === 'PUT') {
+                    router.put(routeConf.pattern, invoke);
+                }
+
+                require('../objectFactory/ObjectFactory').discoveryService.registerDynamicRoute(routeConf.method, routeConf.pattern);
+            }
         });
 }
 

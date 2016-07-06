@@ -29,6 +29,7 @@ function _addStage(funcParamObj,onExecuteComplete){
     var pipelineFieldName = operationObj.conf['params.payload.pipelinename'] ? operationObj.conf['params.payload.pipelinename'] : 'pipeline';
     var sortFromConf = operationObj.conf['params.sort'] || operationObj.conf['params.sort.default'];
     var sortFromPayloadField = operationObj.conf['params.payload.sort.field'];
+    var sortDirection = operationObj.conf['params.payload.sort.direction'];
 
     try {
 
@@ -36,16 +37,20 @@ function _addStage(funcParamObj,onExecuteComplete){
         var pipelineArray = data[pipelineFieldName];
         var sortStage = {};
         var sortSubStage = {};
+        var sortValue = 1; // default ASC
+        if(sortDirection && data[sortDirection] && data[sortDirection]==='DESC'){
+            sortValue = -1;
+        }
 
         // get projection
         if(sortFromPayloadField && data[sortFromPayloadField]){
             // explicit field with all projection
-            sortSubStage[data[sortFromPayloadField]] = 1;
+            sortSubStage[data[sortFromPayloadField]] = sortValue;
         }else if (sortFromConf){
             // configuration-time projection or default
             sortSubStage = JSON.parse(sortFromConf);
         }else{
-            sortSubStage._id = 1;
+            sortSubStage._id = sortValue;
         }
 
         // create the stage

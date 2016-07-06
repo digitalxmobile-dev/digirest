@@ -6,7 +6,8 @@
 'use strict';
 
 /** global requires and vars */
-var MODULE_NAME = 'MatchTextStageOperation';
+const MODULE_NAME = 'MatchTextStageOperation';
+const underscore = require('underscore');
 
 
 /**
@@ -24,8 +25,9 @@ function _addStage(funcParamObj,onExecuteComplete){
 
     /** operation configuration */
     let pipelineFieldName = operationObj.conf['params.payload.pipelinename'] ? operationObj.conf['params.payload.pipelinename'] : 'pipeline';
-    let text = operationObj.conf['params.text']
+    let text = operationObj.conf['params.text'];
     let additionalParams = operationObj.conf['params.query.fields']?operationObj.conf['params.query.fields'].split(','):[];
+    let regexField = operationObj.conf['params.regex'];
 
     try {
 
@@ -33,6 +35,8 @@ function _addStage(funcParamObj,onExecuteComplete){
         let pipelineArray = data[pipelineFieldName];
         let matchStage = {};
         matchStage['$match'] = {};
+        let parameter = {};
+
 
         // create match stage
         for(let par of additionalParams){
@@ -40,9 +44,15 @@ function _addStage(funcParamObj,onExecuteComplete){
             matchStage['$match'][par] = data[par];
         }
 
-        matchStage['$match']['$text'] = {'$search':data[text]};
-
-
+        if(!regexField) {
+            matchStage['$match']['$text'] = {'$search': data[text]};
+        }else{
+            var reg = new RegExp(data[text], 'i');
+            matchStage['$match']['$or']=[{},{}];
+            matchStage['$match']['$or'][0][regexField] = {'$regex':reg};
+            matchStage['$match']['$or'][1]['$text'] = {'$search':data[text]};
+        }
+        
         // build up togheter
         if(!pipelineArray){
             pipelineArray=[];
