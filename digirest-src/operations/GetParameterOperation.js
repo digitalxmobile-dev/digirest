@@ -105,10 +105,19 @@ function _getValue(data,key,obj,response){
     var value = obj[key];
     if(key==='_id') {  /** MONGO ID */
         try {
-            data[key] = _getObjectService().getObjectID(value);
+            if(underscore.isArray(_arrayfy(value))){
+                data[key] = underscore.map(
+                    _arrayfy(value),
+                    function(n){
+                        return _getObjectService().getObjectID(n);
+                    });
+            }else {
+                data[key] = _getObjectService().getObjectID(value);
+            }
         } catch (Error) {
             // bad request
             response.statusCode = 400;
+
             throw Error;
         }
     }else if (value=='false'){  /** BOOLEAN FALSE */
@@ -128,6 +137,23 @@ function _getValue(data,key,obj,response){
     }else {
         data[key] = value;
     }
+}
+
+/**
+ * create array version
+ * @param value
+ * @returns {*}
+ * @private
+ */
+function _arrayfy(value){
+    if(value && value.charAt(0)==='[' && value.charAt(value.length-1)===']'){
+        let newstr = value.slice(1,value.length-1);
+        let arrayVersion = newstr.split(',');
+        if(underscore.isArray(arrayVersion)){
+            return arrayVersion;
+        }
+    }
+    return value;
 }
 
 /**

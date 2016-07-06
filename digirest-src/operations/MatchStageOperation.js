@@ -7,7 +7,7 @@
 
 /** global requires and vars */
 var MODULE_NAME = 'MatchStageOperation';
-
+var underscore = require('underscore');
 
 
 /**
@@ -38,7 +38,11 @@ function _addStage(funcParamObj,onExecuteComplete){
         for(var i=0; i<qualifications.length; i++){
             var fieldName = qualifications[i];
             if ((typeof data[fieldName] != 'undefined' )&&(data[fieldName]!=null)){
-                query[fieldName] = data[fieldName];
+                if(underscore.isArray(data[fieldName])){
+                    query[fieldName] = {'$in':data[fieldName]};
+                }else {
+                    query[fieldName] = data[fieldName];
+                }
             }
         }
 

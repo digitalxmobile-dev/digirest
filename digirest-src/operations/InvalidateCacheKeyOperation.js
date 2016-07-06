@@ -28,7 +28,11 @@ function _invalidate(funcParamObj,onExecuteComplete){
 
     /** operation configuration */
     var cacheKey = operationObj.conf['params.cachekey'];
-    var qualifications = operationObj.conf['params.qualifications'].split(',');
+    var qualifications = operationObj.conf['params.qualifications'] ? operationObj.conf['params.qualifications'].split(',') : [];
+
+    /** release the route */
+    funcParamObj.payload = data;
+    onExecuteComplete(null, funcParamObj);
 
     try {
         var query = {};
@@ -48,9 +52,6 @@ function _invalidate(funcParamObj,onExecuteComplete){
             console.log(MODULE_NAME + ": cache key invalidation FAIL [" + cacheKey + "]");
         }
 
-        /** callback with funcParamObj updated - maybe */
-        funcParamObj.payload = data;
-        onExecuteComplete(null, funcParamObj);
 
     }catch(error){
 
@@ -75,3 +76,4 @@ function _getCacheService(){
 
 /** exports */
 exports.invalidate=_invalidate;
+exports.invoke=_invalidate;

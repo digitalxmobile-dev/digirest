@@ -7,7 +7,6 @@
 
 /** global requires and vars */
 var MODULE_NAME = 'MailService';
-var Parse = require('parse/node');
 //var MailService = require('node-mailjet').connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 var MailSender = require('sendgrid')(process.env.SG_APIUSER, process.env.SG_APIPWD);
 

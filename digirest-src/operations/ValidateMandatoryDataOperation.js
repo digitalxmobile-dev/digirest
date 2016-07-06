@@ -73,8 +73,8 @@ function _validateAllowed(allowedFields, data, funcParamObj, httpResponse, onExe
             if (underscore.indexOf(allowedFields, fieldName) == -1 && underscore.indexOf(specialFields, fieldName) == -1) {
                 console.log(MODULE_NAME + ': error UNALLOWED FIELD ' + fieldName);
                 funcParamObj.errorMessage = 'error UNALLOWED FIELD ' + fieldName;
-                httpResponse.statusCode = 403;
-                onExecuteComplete(new Error(403), funcParamObj);
+                httpResponse.statusCode = 400;
+                onExecuteComplete(new Error(400), funcParamObj);
                 return false;
             }
         }

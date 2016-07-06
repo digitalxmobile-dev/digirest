@@ -739,13 +739,14 @@ function _getCacheService(){
 }
 
 /**
- * return the connection service
+ * private getter for the cache service
  * @returns {*}
  * @private
  */
 function _getConnectionService(){
     return require('../objectFactory/ObjectFactory').connectionService;
 }
+
 
 /** exports */
 
