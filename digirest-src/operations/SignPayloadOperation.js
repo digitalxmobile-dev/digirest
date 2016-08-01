@@ -20,8 +20,6 @@ function _sign(funcParamObj,onExecuteComplete){
 
     /** default object content of an operation */
     var operationObj = funcParamObj.operationRef;
-    var httpRequest = funcParamObj.request;
-    var httpResponse = funcParamObj.response;
     var data = funcParamObj.payload;
 
     /** get expire difference */
@@ -34,7 +32,7 @@ function _sign(funcParamObj,onExecuteComplete){
         // create payload to sign
         var toBeSigned = data;
         if(fromfield){
-            toBeSigned  = toBeSigned[fromfield];
+            toBeSigned = {fromfield:toBeSigned[fromfield]};
         }
 
 
@@ -42,7 +40,7 @@ function _sign(funcParamObj,onExecuteComplete){
         var jwtToken = _getSecurityService().signToken(
             toBeSigned,
             null, // no secret == default app secret,
-            JSON.parse(expire)
+            expire
         );
 
         // push back
@@ -69,10 +67,7 @@ function _sign(funcParamObj,onExecuteComplete){
  * @private
  */
 function _getSecurityService(){
-    if(!SecurityService){
-        SecurityService = require('../objectfactory/ObjectFactory').securityService;
-    }
-    return SecurityService;
+    return  require('../objectfactory/ObjectFactory').securityService;
 }
 
 /** exports */
