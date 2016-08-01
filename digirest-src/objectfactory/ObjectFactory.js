@@ -61,7 +61,6 @@ exports.errorService = errorService;
 // Social Login Service
 var socialLoginService = require('../integrations/SocialLoginService');
 exports.socialLoginService = socialLoginService;
-
 // Web sockets service
 var webSocketService = require('../websocket/WebSocketService');
 exports.webSocketService = webSocketService;

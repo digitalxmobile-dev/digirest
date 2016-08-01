@@ -236,6 +236,7 @@ function _executeChain(operationNamesChain,funcParamObj,onChainComplete){
             // clone the op
             var localOp = operationsPool[operationNamesChain[i]];
             if(!localOp){
+                console.log(MODULE_NAME,': ERROR ', operationNamesChain[i], ' OPERATION NOT FOUND ');
                 throw Error('['+operationNamesChain[i] + '] OPERATION NOT FOUND - [operationsPool size ' + operationsPool? operationsPool.length : ' UNALLOCATED ');
             }
             var chainOp = CloneFactory.clone(localOp);
