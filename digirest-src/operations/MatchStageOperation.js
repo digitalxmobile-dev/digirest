@@ -26,46 +26,39 @@ function _addStage(funcParamObj,onExecuteComplete){
     /** operation configuration */
     var pipelineFieldName = operationObj.conf['params.payload.pipelinename'] ? operationObj.conf['params.payload.pipelinename'] : 'pipeline';
     var qualifications = operationObj.conf['params.qualifications'].split(',');
+    
+    // containers
+    var pipelineArray = data[pipelineFieldName];
+    var matchStage = {};
+    var query = {};
 
-    try {
-
-        // containers
-        var pipelineArray = data[pipelineFieldName];
-        var matchStage = {};
-        var query = {};
-
-        // create the query
-        for(var i=0; i<qualifications.length; i++){
-            var fieldName = qualifications[i];
-            if ((typeof data[fieldName] != 'undefined' )&&(data[fieldName]!=null)){
-                if(underscore.isArray(data[fieldName])){
-                    query[fieldName] = {'$in':data[fieldName]};
-                }else {
-                    query[fieldName] = data[fieldName];
-                }
+    // create the query
+    for(var i=0; i<qualifications.length; i++){
+        var fieldName = qualifications[i];
+        if ((typeof data[fieldName] != 'undefined' )&&(data[fieldName]!=null)){
+            if(underscore.isArray(data[fieldName])){
+                query[fieldName] = {'$in':data[fieldName]};
+            }else {
+                query[fieldName] = data[fieldName];
             }
         }
-
-        // create the stage
-        matchStage['$match']=query;
-
-        // build up togheter
-        if(!pipelineArray){
-            pipelineArray=[];
-        }
-        pipelineArray[pipelineArray.length]=matchStage;
-        data[pipelineFieldName]=pipelineArray;
-
-        /** callback with funcParamObj updated - maybe */
-        funcParamObj.payload = data;
-        onExecuteComplete(null, funcParamObj);
-
-    }catch(error){
-
-        /** dispatch the error to the next op in chain */
-        onExecuteComplete(error,funcParamObj);
-
     }
+
+    // create the stage
+    matchStage['$match']=query;
+
+    // build up togheter
+    if(!pipelineArray){
+        pipelineArray=[];
+    }
+    pipelineArray[pipelineArray.length]=matchStage;
+    data[pipelineFieldName]=pipelineArray;
+
+    /** callback with funcParamObj updated - maybe */
+    funcParamObj.payload = data;
+    onExecuteComplete(null, funcParamObj);
+
+
 }
 
 /** exports */
