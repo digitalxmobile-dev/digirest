@@ -6,7 +6,9 @@
 'use strict';
 
 /** global requires and vars */
-var MODULE_NAME = 'PurgePayloadOperation';
+const MODULE_NAME = 'PurgePayloadOperation';
+const underscore = require('underscore');
+
 
 /**
  * the function to be invoked by the operation service
@@ -18,60 +20,66 @@ var MODULE_NAME = 'PurgePayloadOperation';
 function _purge(funcParamObj,onExecuteComplete){
 
     /** default object content of an operation */
-    var operationObj = funcParamObj.operationRef;
-    var httpRequest = funcParamObj.request;
-    var httpResponse = funcParamObj.response;
     var data = funcParamObj.payload;
 
     /** get expire difference */
-    var remove = operationObj.conf['params.payload.remove'];
-    var leave = operationObj.conf['params.payload.leave'];
+    var remove = funcParamObj.operationRef.conf['params.payload.remove'];
+    var leave = funcParamObj.operationRef.conf['params.payload.leave'];
 
-    try {
-
-        // get array of fields
-        var fields = [];
-        if(remove){
-            fields = remove.split(',');
-        }else if (leave){
-            fields = leave.split(',');
-        }
-
-        // manage remove / leave
-        var newdata = remove ? data : {};
-        for(var iterator in fields){
-            var current = fields[iterator];
-            if(remove){
-                if(current.split('.').length>1){
-                    var keyArray = current.split('.');
-                    var obj = newdata;
-                    for(var it in keyArray){
-                        if(it==keyArray.length-1){
-                            delete obj[keyArray[it]];
-                        }else{
-                            obj = obj[keyArray[it]];
-                        }
-                    }
-                }else {
-                    delete newdata[current];
-                }
-            }else{
-                newdata[current] = data[current];
-            }
-        }
-
-        // packit
-        funcParamObj.payload = newdata;
-
-        // send
-        onExecuteComplete(null,funcParamObj);
+    // get array of fields
+    var fields = [];
+    if(remove) fields = remove.split(',');
+    else if (leave) fields = leave.split(',');
 
 
-    }catch(error){
-
-        /** dispatch the error to the next op in chain */
-        onExecuteComplete(error,funcParamObj);
+    var newdata;
+    if(underscore.isArray(data)){
+        newdata = underscore.map(data,(itm)=>{
+            return purgeObject(remove,itm,fields);
+        })
+    }else{
+        newdata = purgeObject(remove, data, fields);
     }
+
+    // packit
+    funcParamObj.payload = newdata;
+
+    // send
+    onExecuteComplete(null,funcParamObj);
+
+}
+
+/**
+ * purge the objects
+ * @param remove
+ * @param data
+ * @param fields
+ * @returns {{}}
+ */
+function purgeObject(remove, data, fields) {
+// manage remove / leave
+    var newdata = remove ? data : {};
+    for (var iterator in fields) {
+        var current = fields[iterator];
+        if (remove) {
+            if (current.split('.').length > 1) {
+                var keyArray = current.split('.');
+                var obj = newdata;
+                for (var it in keyArray) {
+                    if (it == keyArray.length - 1) {
+                        delete obj[keyArray[it]];
+                    } else {
+                        obj = obj[keyArray[it]];
+                    }
+                }
+            } else {
+                delete newdata[current];
+            }
+        } else {
+            newdata[current] = data[current];
+        }
+    }
+    return newdata;
 }
 
 

@@ -17,51 +17,51 @@ var async = require('async');
  * @param onExecuteComplete
  * @private
  */
-function _insert(funcParamObj,onExecuteComplete){
+function _insert(funcParamObj, onExecuteComplete) {
 
-    /** default object content of an operation */
-    var operationObj = funcParamObj.operationRef;
-    var httpRequest = funcParamObj.request;
-    var httpResponse = funcParamObj.response;
-    var data = funcParamObj.payload;
+  /** default object content of an operation */
+  var operationObj = funcParamObj.operationRef;
+  var httpRequest = funcParamObj.request;
+  var httpResponse = funcParamObj.response;
+  var data = funcParamObj.payload;
 
-    /** pre - operations on data */
-    var collection = operationObj.conf['params.collection'];
-    var newObjectsField = operationObj.conf['params.payload.array'];
-    var lockPayload = operationObj.conf['params.payload.lock'];
-    var fieldDest = operationObj.conf['params.dest.field'];
+  /** pre - operations on data */
+  var collection = operationObj.conf['params.collection'];
+  var newObjectsField = operationObj.conf['params.payload.array'];
+  var lockPayload = operationObj.conf['params.payload.lock'];
+  var fieldDest = operationObj.conf['params.dest.field'];
 
 
-    try {
+  try {
 
-        /** verify and insert */
-        async.waterfall([
-                // insert obj
-                function insert( callback) {
-                    _getObjectService().insertObject(data[newObjectsField], collection, callback);
-                },
-                // finalize
-                function onOK(response, callback) {
-                    if(!lockPayload) {
-                        if(fieldDest){
-                            funcParamObj.payload[fieldDest] = response;
-                        }else {
-                            funcParamObj.payload = response;
-                        }
-                    }
-                    onExecuteComplete(null, funcParamObj);
-                }
-            ],
-            function onFinish(error, value) {
-                if(error){
-                    console.error((error));
-                }
-                onExecuteComplete(error, value);
-            });
+    /** verify and insert */
+    async.waterfall([
+        // insert obj
+        function insert(callback) {
+          _getObjectService().insertObject(data[newObjectsField], collection, callback);
+        },
+        // finalize
+        function onOK(response, callback) {
+          if (!lockPayload) {
+            if (fieldDest) {
+              funcParamObj.payload[fieldDest] = response;
+            } else {
+              funcParamObj.payload = response;
+            }
+          }
+          onExecuteComplete(null, funcParamObj);
+        }
+      ],
+      function onFinish(error, value) {
+        if (error) {
+          console.error((error));
+        }
+        onExecuteComplete(error, value);
+      });
 
-    }catch(err){
-        onExecuteComplete(err, funcParamObj);
-    }
+  } catch (err) {
+    onExecuteComplete(err, funcParamObj);
+  }
 }
 
 
@@ -70,14 +70,14 @@ function _insert(funcParamObj,onExecuteComplete){
  * @returns {*}
  * @private
  */
-function _getObjectService(){
-    if(!ObjectService){
-        ObjectService = require('../objectfactory/ObjectFactory').objectService;
-    }else{
-        return ObjectService;
-    }
+function _getObjectService() {
+  if (!ObjectService) {
+    ObjectService = require('../objectfactory/ObjectFactory').objectService;
+  } else {
+    return ObjectService;
+  }
 }
 
 /** exports */
-exports.insert=_insert;
-exports.invoke=_insert;
+exports.insert = _insert;
+exports.invoke = _insert;

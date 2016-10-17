@@ -6,8 +6,8 @@
 'use strict';
 
 /** global requires and vars */
-var MODULE_NAME = 'HideResultsDataOperation';
-var underscore = require('underscore');
+const MODULE_NAME = 'HideResultsDataOperation';
+const underscore = require('underscore');
 
 
 /**
@@ -17,53 +17,37 @@ var underscore = require('underscore');
  * @param onExecuteComplete
  * @private
  */
-function _clear(funcParamObj,onExecuteComplete){
+function _clear(funcParamObj, onExecuteComplete) {
 
-    /** default object content of an operation */
-    var operationObj = funcParamObj.operationRef;
-    var data = funcParamObj.payload;
+  /** default object content of an operation */
+  let operationObj = funcParamObj.operationRef;
+  let data = funcParamObj.payload;
 
-    /** operation configuration */
-    var fieldsName = operationObj.conf['params.fields'].split(',');
+  /** operation configuration */
+  let fieldsName = operationObj.conf['params.fields'].split(',');
 
-    try {
-
-        // clear
-        /*
-        for(let row of data){
-            for(let field of fieldsName){
-                delete row[field]
+    funcParamObj.payload = underscore.map(
+      data,
+      function filter(row) {
+        return underscore.mapObject(
+          row,
+          function (value, field) {
+            if (underscore.find(fieldsName, function (f) {
+                return f === field
+              })) {
+              return null;
+            } else {
+              return value;
             }
-        }
+          });
+      }
+    );
 
-        funcParamObj.payload = data;
-        */
+    onExecuteComplete(null, funcParamObj);
 
-        funcParamObj.payload = underscore.map(
-            data,
-            function filter(row){
-                return underscore.mapObject(
-                    row,
-                    function(value,field){
-                        if(underscore.find(fieldsName,function(f){return f===field})){
-                            return null;
-                        }else{
-                            return value;
-                        }
-                    });
-            }
-        );
 
-        onExecuteComplete(null, funcParamObj);
-
-    }catch(error){
-
-        /** dispatch the error to the next op in chain */
-        onExecuteComplete(error,funcParamObj);
-
-    }
 }
 
 /** exports */
-exports._clear=_clear;
-exports.invoke=_clear;
+exports._clear = _clear;
+exports.invoke = _clear;

@@ -16,31 +16,31 @@ var MODULE_NAME = 'ChangePropertyOperation';
  * @param onExecuteComplete
  * @private
  */
-function _operationFunction(funcParamObj,onExecuteComplete){
+function _operationFunction(funcParamObj, onExecuteComplete) {
 
-    /** default object content of an operation */
-    var operationObj = funcParamObj.operationRef;
-    var httpRequest = funcParamObj.request;
-    var httpResponse = funcParamObj.response;
+  /** default object content of an operation */
+  var operationObj = funcParamObj.operationRef;
+  var httpRequest = funcParamObj.request;
+  var httpResponse = funcParamObj.response;
 
-    try {
+  try {
 
-        var fromfield = operationObj.conf['params.from'];
-        var tofield = operationObj.conf['params.to'];
-        var removeoriginal = operationObj.conf['params.remove']; //default false
+    var fromfield = operationObj.conf['params.from'];
+    var tofield = operationObj.conf['params.to'];
+    var removeoriginal = operationObj.conf['params.remove']; //default false
 
-        /** callback with funcParamObj updated - maybe */
-        funcParamObj.payload[tofield] = funcParamObj.payload[fromfield];
-        if(removeoriginal){
-            delete funcParamObj[fromfield];
-        }
-        onExecuteComplete(null, funcParamObj);
-
-    }catch(error){
-         /** dispatch the error to the next op in chain */
-        onExecuteComplete(operationErrorSuperDangerous,funcParamObj);
+    /** callback with funcParamObj updated - maybe */
+    funcParamObj.payload[tofield] = funcParamObj.payload[fromfield];
+    if (removeoriginal) {
+      delete funcParamObj[fromfield];
     }
+    onExecuteComplete(null, funcParamObj);
+
+  } catch (error) {
+    /** dispatch the error to the next op in chain */
+    onExecuteComplete(operationErrorSuperDangerous, funcParamObj);
+  }
 }
 
 /** exports */
-exports.invoke=_operationFunction;
+exports.invoke = _operationFunction;

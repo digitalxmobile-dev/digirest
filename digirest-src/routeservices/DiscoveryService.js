@@ -6,10 +6,11 @@
 "use strict";
 
 /** global requires and vars */
-var MODULE_NAME = 'DiscoveryService';
-var dynamicRoutes=[];
-var dynamicRoot='/';
-var fixedRoutes=[];
+const MODULE_NAME = 'DiscoveryService';
+const dynamicRoutes = [];
+const fixedRoutes = [];
+var dynamicRoot = '/';
+
 
 /**
  * register a dynamic route
@@ -17,11 +18,11 @@ var fixedRoutes=[];
  * @param pattern
  * @private
  */
-function _registerDynamicRoute(method,pattern){
-    var obj= {};
-    obj.method=method;
-    obj.pattern=pattern;
-    dynamicRoutes.push(obj);
+function _registerDynamicRoute(method, pattern) {
+  let obj = {};
+  obj.method = method;
+  obj.pattern = pattern;
+  dynamicRoutes.push(obj);
 }
 
 /**
@@ -30,11 +31,11 @@ function _registerDynamicRoute(method,pattern){
  * @param pattern
  * @private
  */
-function _registerFixedRoute(method,pattern){
-    var obj= {};
-    obj.method=method;
-    obj.pattern=pattern;
-    fixedRoutes.push(obj);
+function _registerFixedRoute(method, pattern) {
+  let obj = {};
+  obj.method = method;
+  obj.pattern = pattern;
+  fixedRoutes.push(obj);
 }
 
 /**
@@ -42,24 +43,24 @@ function _registerFixedRoute(method,pattern){
  * @returns {Array}
  * @private
  */
-function _printRoutes(){
-    var outStr=[];
+function _printRoutes() {
+  let outStr = [];
 
-    // fixed routes
-    for (var i = 0; i<fixedRoutes.length; i++){
-        var obj = fixedRoutes[i];
-        var str = obj.method + ':' + obj.pattern;
-        outStr.push(str);
-    }
+  // fixed routes
+  for (let i = 0; i < fixedRoutes.length; i++) {
+    let obj = fixedRoutes[i];
+    let str = obj.method + ':' + obj.pattern;
+    outStr.push(str);
+  }
 
-    // dynamic routes
-    for (var i = 0; i<dynamicRoutes.length; i++){
-        var obj = dynamicRoutes[i];
-        var str = obj.method + ':' + dynamicRoot +  obj.pattern;
-        outStr.push(str);
-    }
+  // dynamic routes
+  for (let i = 0; i < dynamicRoutes.length; i++) {
+    let obj = dynamicRoutes[i];
+    let str = obj.method + ':' + dynamicRoot + obj.pattern;
+    outStr.push(str);
+  }
 
-    return outStr;
+  return outStr;
 }
 
 /**
@@ -67,12 +68,12 @@ function _printRoutes(){
  * @param root
  * @private
  */
-function _setDynRoot(root){
-    dynamicRoot = root;
+function _setDynRoot(root) {
+  dynamicRoot = root;
 }
 
 /** exports */
-exports.setDynRoot=_setDynRoot;
-exports.registerFixedRoute=_registerFixedRoute;
-exports.registerDynamicRoute=_registerDynamicRoute;
-exports.printRoutes=_printRoutes;
+exports.setDynRoot = _setDynRoot;
+exports.registerFixedRoute = _registerFixedRoute;
+exports.registerDynamicRoute = _registerDynamicRoute;
+exports.printRoutes = _printRoutes;

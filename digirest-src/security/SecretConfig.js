@@ -3,5 +3,5 @@
  */
 
 
-exports.secret = 'sec.key.here';
+exports.secret = 'secret-here';
 

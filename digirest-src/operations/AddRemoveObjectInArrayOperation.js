@@ -16,37 +16,37 @@ var MODULE_NAME = 'AddRemoveObjectInArrayOperation';
  * @param onExecuteComplete
  * @private
  */
-function _invoke(funcParamObj,onExecuteComplete){
+function _invoke(funcParamObj, onExecuteComplete) {
 
-    /** default object content of an operation */
-    var operationObj = funcParamObj.operationRef;
-    var data = funcParamObj.payload;
+  /** default object content of an operation */
+  var operationObj = funcParamObj.operationRef;
+  var data = funcParamObj.payload;
 
-    try {
+  try {
 
-        var fieldFrom = operationObj.conf['params.field.from'];
-        var operation = operationObj.conf['params.op'];
-        var fieldOp = operationObj.conf['params.field.op'];
-        var fieldTo = operationObj.conf['params.field.to'];
+    var fieldFrom = operationObj.conf['params.field.from'];
+    var operation = operationObj.conf['params.op'];
+    var fieldOp = operationObj.conf['params.field.op'];
+    var fieldTo = operationObj.conf['params.field.to'];
 
 
-        // data.fieldTo = {$operation : {fieldOp : fieldFrom}}
+    // data.fieldTo = {$operation : {fieldOp : fieldFrom}}
 
-        var opObject = {};
-        var inner = {};
-        inner[fieldOp] = data[fieldFrom];
-        opObject['$'+operation] = inner;
-        data[fieldTo] = opObject;
-        funcParamObj.payload = data;
-        onExecuteComplete(null,funcParamObj);
+    var opObject = {};
+    var inner = {};
+    inner[fieldOp] = data[fieldFrom];
+    opObject['$' + operation] = inner;
+    data[fieldTo] = opObject;
+    funcParamObj.payload = data;
+    onExecuteComplete(null, funcParamObj);
 
-    }catch(error){
+  } catch (error) {
 
-        /** dispatch the error to the next op in chain */
-        onExecuteComplete(error,funcParamObj);
-    }
+    /** dispatch the error to the next op in chain */
+    onExecuteComplete(error, funcParamObj);
+  }
 }
 
 
 /** exports */
-exports.invoke=_invoke;
+exports.invoke = _invoke;

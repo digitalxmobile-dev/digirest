@@ -21,90 +21,78 @@ var underscore = require('underscore');
  * @param onExecuteComplete
  * @private
  */
-function _setVal(funcParamObj,onExecuteComplete){
+function _setVal(funcParamObj, onExecuteComplete) {
 
-    /** default object content of an operation */
-    var operationObj = funcParamObj.operationRef;
-    var data = funcParamObj.payload;
+  /** default object content of an operation */
+  var data = funcParamObj.payload;
 
-    var fixedvalueStr = operationObj.conf['params.values'];
-    var arrayObject = operationObj.conf['params.value.array'];
+  var fixedvalueStr = funcParamObj.operationRef.conf['params.values'];
+  var arrayObject = funcParamObj.operationRef.conf['params.value.array'];
 
-    try {
+  /** prepare the function to invoke at the end of operation */
+  var functionComplete = function (error, value) {
 
-        /** prepare the function to invoke at the end of operation */
-        var functionComplete = function(error,value){
+    /** if is a callback from a placeholder invokation, replace */
+    if (value && !error && fixedvalueStr.indexOf(REPLACE_HOLDER) != -1) {
+      var stringObj = AdvancedString(fixedvalueStr);
+      stringObj = stringObj.replaceAll(REPLACE_HOLDER, value);
+      fixedvalueStr = stringObj.toString();
+    }
 
-            /** if is a callback from a placeholder invokation, replace */
-            if(value && !error && fixedvalueStr.indexOf(REPLACE_HOLDER) != -1){
-                var stringObj = AdvancedString(fixedvalueStr);
-                stringObj = stringObj.replaceAll(REPLACE_HOLDER,value);
-                fixedvalueStr  = stringObj.toString();
-            }
-
-            /** add data to payload */
-            var fixedValues = JSON.parse(fixedvalueStr);
-            for(var valueKey in fixedValues){
-                if(fixedValues[valueKey]==NOW_HOLDER){
-                    fixedValues[valueKey] = new Date();
-                }else if (fixedValues[valueKey]==H24_HOLDER){
-                    fixedValues[valueKey] = {
-                        '$lt':new Date(),
-                        '$gte':new Date(new Date().setDate(new Date().getDate()-1))
-                    };
-
-                };
-
-                if(!arrayObject) {
-                    // set data to payload
-                    data[valueKey] = fixedValues[valueKey];
-                }else{
-                    // set data to array
-                    data[arrayObject] = underscore.map(
-                        data[arrayObject],
-                        function initAll(obj){
-                            obj[valueKey] = fixedValues[valueKey];
-                            return obj;
-                        });
-                }
-            }
-
-            /** go on with next operation */
-            funcParamObj.payload = data;
-            onExecuteComplete(null, funcParamObj);
+    /** add data to payload */
+    var fixedValues = JSON.parse(fixedvalueStr);
+    for (var valueKey in fixedValues) {
+      if (fixedValues[valueKey] == NOW_HOLDER) {
+        fixedValues[valueKey] = new Date();
+      } else if (fixedValues[valueKey] == H24_HOLDER) {
+        fixedValues[valueKey] = {
+          '$lt': new Date(),
+          '$gte': new Date(new Date().setDate(new Date().getDate() - 1))
         };
 
-        /** replace and eval the placeholders */
-        if(fixedvalueStr.indexOf('$$') != -1){
-            var stringSplits = fixedvalueStr.split('$$');
-            /*   {"fieldname" : "$$placeholder$$" }
-             *   splits=['{"fieldname" : "','placeholder','"}']
-             */
-            if(stringSplits && stringSplits.length==3){
-                fixedvalueStr = stringSplits[0] + '$$REPLACE$$' + stringSplits[2];
-                var placeHolder = stringSplits[1].split('.');
-                // get the module
-                var module = require('../objectfactory/ObjectFactory')[placeHolder[0]];
-                // invoke the function
-                module[placeHolder[1]](functionComplete)
+      }
+      ;
 
-            }
-        }else{
-            functionComplete(null,null);
-        }
+      if (!arrayObject) {
+        // set data to payload
+        data[valueKey] = fixedValues[valueKey];
+      } else {
+        // set data to array
+        data[arrayObject] = underscore.map(
+          data[arrayObject],
+          function initAll(obj) {
+            obj[valueKey] = fixedValues[valueKey];
+            return obj;
+          });
+      }
+    }
 
+    /** go on with next operation */
+    funcParamObj.payload = data;
+    onExecuteComplete(null, funcParamObj);
+  };
 
-
-    }catch(error){
-
-        /** manage error in 2 ways:*/
-
-        /** dispatch the error to the next op in chain */
-        onExecuteComplete(error,funcParamObj);
+  /** replace and eval the placeholders */
+  if (fixedvalueStr.indexOf('$$') != -1) {
+    var stringSplits = fixedvalueStr.split('$$');
+    /*   {"fieldname" : "$$placeholder$$" }
+     *   splits=['{"fieldname" : "','placeholder','"}']
+     */
+    if (stringSplits && stringSplits.length == 3) {
+      fixedvalueStr = stringSplits[0] + '$$REPLACE$$' + stringSplits[2];
+      var placeHolder = stringSplits[1].split('.');
+      // get the module
+      var module = require('../objectfactory/ObjectFactory')[placeHolder[0]];
+      // invoke the function
+      module[placeHolder[1]](functionComplete)
 
     }
+  } else {
+    functionComplete(null, null);
+  }
+
 }
 
 /** exports */
-exports.setval=_setVal;
-exports.invoke=_setVal;
+exports.setval = _setVal;
+exports.invoke = _setVal;

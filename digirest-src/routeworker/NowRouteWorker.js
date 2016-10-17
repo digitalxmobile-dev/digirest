@@ -3,13 +3,17 @@
  * simple now route worker
  * Author: Aureliano
  */
-
-
 "use strict";
+const AbstractRouteWorker = require('./AbstractRouteWorker');
 
 
-exports.invoke= function(req,res){
+class NowRouteWorker extends AbstractRouteWorker {
 
+  invoke(req, res) {
     res.send(new Date());
+  }
 
 }
+;
+
+module.exports = NowRouteWorker;

@@ -6,48 +6,53 @@
 "use strict";
 
 /** global requires and vars */
-var MODULE_NAME = 'SecurityJwtMiddleware';
+const MODULE_NAME = 'SecurityJwtMiddleware';
 var SecurityService = require('../objectfactory/ObjectFactory').securityService;
+var isDev = 'notdefined';
 
-module.exports = function _ApplicationFilter(req, res, next)  {
+module.exports = function _ApplicationFilter(req, res, next) {
 
-    // check for debug version
-    if(process.env.ENV=='development' && process.env.SKIP_AUTH=='true'){
-        next();
-    }else {
+  if (isDev === 'notdefined') {
+    isDev = process.env.ENV == 'development' && process.env.SKIP_AUTH == 'true';
+  }
 
-        // check header or url parameters or post parameters for token
-        var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  // check for debug version
+  if (isDev) {
+    next();
+  } else {
 
-        // decode token
-        if (token) {
+    // check header or url parameters or post parameters for token
+    let token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-            // verifies secret and checks exp
-            _getSecurityService().verifyToken(token,
-                function (err, decoded) {
-                    if (err) {
-                        return res.status(403).send({
-                            success: false,
-                            message: 'Failed to authenticate token.'
-                        });
-                    } else {
-                        // if everything is good, save to request for use in other routes
-                        req.decoded = decoded;
-                        next();
-                    }
-                });
+    // decode token
+    if (token) {
 
-        } else {
-
-            // if there is no token
-            // return an error
+      // verifies secret and checks exp
+      _getSecurityService().verifyToken(token,
+        function (err, decoded) {
+          if (err) {
             return res.status(403).send({
-                success: false,
-                message: 'No token provided.'
+              success: false,
+              message: 'Failed to authenticate token.'
             });
+          } else {
+            // if everything is good, save to request for use in other routes
+            req.decoded = decoded;
+            next();
+          }
+        });
 
-        }
+    } else {
+
+      // if there is no token
+      // return an error
+      return res.status(403).send({
+        success: false,
+        message: 'No token provided.'
+      });
+
     }
+  }
 }
 
 /**
@@ -55,10 +60,10 @@ module.exports = function _ApplicationFilter(req, res, next)  {
  * @returns {*}
  * @private
  */
-function _getSecurityService(){
-    if(!SecurityService){
-        SecurityService = require('../objectfactory/ObjectFactory').securityService;
-    }
-    return SecurityService;
+function _getSecurityService() {
+  if (!SecurityService) {
+    SecurityService = require('../objectfactory/ObjectFactory').securityService;
+  }
+  return SecurityService;
 }
 

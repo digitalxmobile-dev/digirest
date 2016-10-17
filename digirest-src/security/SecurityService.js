@@ -373,6 +373,19 @@ function _signToken(payload,secret,expire){
 }
 
 /**
+ * return the admin token
+ * @returns {*}
+ * @private
+ */
+function _getAdminToken(){
+    var options = {};
+    options.expiresIn='1h';
+    var secret = require('./SecretConfig').secret;
+    var token = jwt.sign( {cd_privilege:'CMS-ACCESS-ADMIN'},secret,options);
+    return token;
+}
+
+/**
  * getter for configuration service
  * @returns {*}
  * @private
@@ -419,3 +432,4 @@ exports.signToken=_signToken;
 exports.authUser=_authUser;
 exports.authFbUser= _authFbUser;
 exports.authGoogleUser=_authGoogleUser;
+exports.getAdminToken=_getAdminToken;

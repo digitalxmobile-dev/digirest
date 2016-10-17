@@ -11,7 +11,6 @@ var connectedUser = [];   // connectedUser[userid] = [socketid,socketid2,...]
 var connectedSocket = []; // connectedSocket[socketid] = userid;
 
 
-
 /**
  * Connect Socket
  * @param socketid
@@ -19,27 +18,27 @@ var connectedSocket = []; // connectedSocket[socketid] = userid;
  * @param onOk
  * @private
  */
-function _connect (socketid, token, onOk){
-    _getSecurityService().verifyToken(
-        token,
-        function onVerify (err,decoded){
-            if(err){
-                onOk(err);
+function _connect(socketid, token, onOk) {
+  _getSecurityService().verifyToken(
+    token,
+    function onVerify(err, decoded) {
+      if (err) {
+        onOk(err);
 
-            }else if (decoded) {
-                if(!connectedUser[decoded._id]){
-                    connectedUser[decoded._id] = [];
-                }
-                if(!underscore.contains(connectedUser[decoded._id],socketid)) {
-                    connectedUser[decoded._id].push(socketid);
-                }
-                connectedSocket[socketid] = decoded._id;
-                onOk(null,connectedUser[decoded._id],decoded);
-            }else{
-                // do nothing, should never pass here
-                console.error('something rare in WebSocketUserService');
-            }
-        });
+      } else if (decoded) {
+        if (!connectedUser[decoded._id]) {
+          connectedUser[decoded._id] = [];
+        }
+        if (!underscore.contains(connectedUser[decoded._id], socketid)) {
+          connectedUser[decoded._id].push(socketid);
+        }
+        connectedSocket[socketid] = decoded._id;
+        onOk(null, connectedUser[decoded._id], decoded);
+      } else {
+        // do nothing, should never pass here
+        console.error('something rare in WebSocketUserService');
+      }
+    });
 }
 
 /**
@@ -48,20 +47,20 @@ function _connect (socketid, token, onOk){
  * @param onOk
  * @private
  */
-function _disconnect(socketid){
-    var userArray = underscore.find(
-        underscore.values(connectedUser),
-        function (obj) {
-            return (underscore.contains(obj, socketid));
-        });
+function _disconnect(socketid) {
+  var userArray = underscore.find(
+    underscore.values(connectedUser),
+    function (obj) {
+      return (underscore.contains(obj, socketid));
+    });
 
-    if(userArray){
-        userArray.splice(underscore.indexOf(socketid),1)
-    }
+  if (userArray) {
+    userArray.splice(underscore.indexOf(socketid), 1)
+  }
 
-    delete connectedSocket[socketid];
+  delete connectedSocket[socketid];
 
-    return;
+  return;
 }
 
 /**
@@ -70,8 +69,8 @@ function _disconnect(socketid){
  * @returns {*}
  * @private
  */
-function _getSockets(userid){
-    return connectedUser[userid];
+function _getSockets(userid) {
+  return connectedUser[userid];
 }
 
 /**
@@ -80,23 +79,23 @@ function _getSockets(userid){
  * @returns {*}
  * @private
  */
-function _getUser(socketid){
-    return connectedSocket[socketid];
+function _getUser(socketid) {
+  return connectedSocket[socketid];
 }
 /**
  * getter for configuration service
  * @returns {*}
  * @private
  */
-function _getSecurityService(){
-    if(!SecurityService){
-        SecurityService = require('../objectfactory/ObjectFactory').securityService;
-    }
-    return SecurityService;
+function _getSecurityService() {
+  if (!SecurityService) {
+    SecurityService = require('../objectfactory/ObjectFactory').securityService;
+  }
+  return SecurityService;
 }
 
 /** Exports */
-exports.connect=_connect;
-exports.disconnect=_disconnect;
-exports.getSockets=_getSockets;
-exports.getUser=_getUser;
+exports.connect = _connect;
+exports.disconnect = _disconnect;
+exports.getSockets = _getSockets;
+exports.getUser = _getUser;

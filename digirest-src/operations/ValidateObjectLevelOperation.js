@@ -43,7 +43,7 @@ function _validate(funcParamObj,onExecuteComplete){
     var privilege = httpRequest.decoded['cd_privilege'];
     var value = _getValue(funcParamObj.payload,field);
     var identifier = _getValue(httpRequest.decoded,key);
-    if(value==identifier || underscore.contains(higherPrivilege,privilege)){
+    if(!value||(value==identifier || underscore.contains(higherPrivilege,privilege))){
         /** I'm admin or is my object */
         onExecuteComplete(null, funcParamObj)
     }else{
@@ -64,16 +64,20 @@ function _validate(funcParamObj,onExecuteComplete){
  * @private
  */
 function _getValue(obj,field){
-    if(field.indexOf('.')==-1){
-        if (obj[field]){
+    if (obj && field.indexOf('.') == -1) {
+        if (obj[field]) {
             return obj[field];
-        }else{
+        } else {
             return obj['_id'];
         }
-    }else{
-        var fieldStep = field.split('.');
-        for(var i=0; i<fieldStep.length; i++){
-            obj = obj[fieldStep[i]];
+    } else {
+        if(obj) {
+            var fieldStep = field.split('.');
+            for (var i = 0; i < fieldStep.length; i++) {
+                if(obj){
+                    obj = obj[fieldStep[i]];
+                }
+            }
         }
         return obj;
     }
